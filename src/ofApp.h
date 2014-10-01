@@ -18,22 +18,21 @@ public:
     void draw();
 
     void mousePressed(int x, int y, int button);
+	void keyPressed(int key);
 
-    ofxKinect movie, movie2;
-	ofxCvGrayscaleImage movieDepth, movieDepth2;
+    ofxKinect kinect1, kinect2;
 
 	ofEasyCam cam;
 
-    
     ofxCvColorImage rgb,hsb, rgb2, hsb2;
-	ofxCvGrayscaleImage hue,sat,bri,filtered, hue2, sat2, bri2, filtered2;    
+	ofxCvGrayscaleImage hue,sat,bri,filtered;
+	ofxCvGrayscaleImage hue2, sat2, bri2, filtered2;    
     ofxCvContourFinder contours, contours2;
     
     int w,h;
     int findHue;
 
 	int resize;
-
 
 	ofMesh racket1Mesh;
 
@@ -45,17 +44,30 @@ public:
 	float kinect2CentroidY;
 	float kinect2CentroidZ;
 
+	float kinect1OldCentroidX;
+	float kinect1OldCentroidY;
+	float kinect1OldCentroidZ;
+
+	float kinect2OldCentroidX;
+	float kinect2OldCentroidY;
+	float kinect2OldCentroidZ;
+
 
 	float racket1Angle;
 	float racket2Angle;
 
 
 	ofPoint top, bottom, left, right;
+	ofPoint top2, bottom2, left2, right2;
+
+
 	float width, height;
 
 
 
 	ofxOscSender sender;
+
+	bool showVideoFeed;
 	
 
 };
