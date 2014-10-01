@@ -8,7 +8,7 @@ void testApp::setup() {
 	w = kinect1.getWidth();
 	h = kinect1.getHeight();
 
-	resize = 3;
+	resize = 2;
 
     //reserve memory for cv images
 	hsb.allocate(w, h);
@@ -168,7 +168,7 @@ sender.sendMessage(message);
 
 //--------------------------------------------------------------
 void testApp::draw(){
-	/*
+	
     ofSetColor(255,255,255);
     
     //draw all cv images
@@ -250,7 +250,7 @@ void testApp::draw(){
 
 	}
 	
-	*/
+	
 }
 
 //--------------------------------------------------------------
