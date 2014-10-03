@@ -33,11 +33,23 @@ void testApp::setup() {
 	kinect1OldCentroidY = 0;
 	kinect1OldCentroidZ = 0;
 
+	kinect2CentroidX = 0;
+	kinect2CentroidY = 0;
+	kinect2CentroidZ = 0;
+
+	kinect2OldCentroidX = 0;
+	kinect2OldCentroidY = 0;
+	kinect2OldCentroidZ = 0;
+
 	sender.setup(HOST, PORT);
 
 
-
+	//moteur kinect
 	tiltAngle1 = 0;
+	tiltAngle2 = 0;
+
+	offset = 5;
+
 }
 
 //--------------------------------------------------------------
@@ -45,6 +57,8 @@ void testApp::update(){
     
 	ofSetWindowTitle(ofToString(ofGetFrameRate(), 0));
 
+
+	//////////// KINECT 1
     kinect1.update();
     if (kinect1.isFrameNew()) {
         
@@ -76,23 +90,9 @@ void testApp::update(){
 
 			width = contours.blobs[0].boundingRect.width / 2;
 			height = contours.blobs[0].boundingRect.height / 2;
-
-			/*
-			top = ofVec3f(kinect1CentroidX, kinect1CentroidY - height / 2);
-			bottom = ofVec3f(kinect1CentroidX, kinect1CentroidY +  height / 2 );
-
-			left = ofVec3f(kinect1CentroidX + width / 2, kinect1CentroidY);
-			right = ofVec3f(kinect1CentroidX - width / 2, kinect1CentroidY);
-			*/
 			
 			
-			int offset = 5;
-			/*
-			topM = ofVec3f(kinect1CentroidX , kinect1CentroidY + offset, kinect1.getDistanceAt(kinect1CentroidX * (int)(resize * 3/2), (kinect1CentroidY + offset) * (int)(resize * 3/2) ));
-			bottomM = ofVec3f(kinect1CentroidX, kinect1CentroidY - offset, kinect1.getDistanceAt(kinect1CentroidX * (int)(resize * 3/2), (kinect1CentroidY - offset) * (int)(resize * 3/2)));
-			leftM = ofVec3f(kinect1CentroidX + offset, kinect1CentroidY, kinect1.getDistanceAt((kinect1CentroidX + offset) * (int)(resize * 3/2) , kinect1CentroidY * (int)(resize * 3/2)));
-			rightM = ofVec3f(kinect1CentroidX - offset, kinect1CentroidY, kinect1.getDistanceAt(( kinect1CentroidX - offset) * (int)(resize * 3/2), kinect1CentroidY * (int)(resize * 3/2) ));
-			*/
+
 
 
 			topM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY + offset) * (int)(resize) );
@@ -101,6 +101,8 @@ void testApp::update(){
 			rightM = kinect1.getWorldCoordinateAt( ( kinect1CentroidX - offset) * (int)(resize), kinect1CentroidY * (int)(resize) );
 			kinect1CentroidZ = kinect1.getDistanceAt( kinect1CentroidX * (int)(resize), kinect1CentroidY * (int)(resize));
 			centroidM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), kinect1CentroidY * (int)(resize) );
+			
+			
 
 			//racket1Angle = atan( (PI / 2) / 75 * (bottomM.z - topM.z));
 
@@ -115,13 +117,25 @@ void testApp::update(){
 				racket1AngleHori = topM.z - bottomM.z;
 			}
 
+			if (centroidM.z < 400) {
+				centroidM.z = 400;
+			}
+
+			// modif centre kinect 01
+			centroidM.y -= 240;
+			if(centroidM.y==0){ // condition pour no detect
+				centroidM.y=0;
+			}
+			
+
+
 		}
     }
 
-	
-	kinect2.update();
-    
-	if (kinect2.isFrameNew()) {
+	//////////// KINECT 2
+    kinect2.update();
+    if (kinect2.isFrameNew()) {
+        
 		hsb2.resize(w, h);
         //copy webcam pixels to rgb image
         hsb2.setFromPixels(kinect2.getPixels(), w, h);
@@ -141,7 +155,7 @@ void testApp::update(){
         filtered2.flagImageChanged();
 
         //run the contour finder on the filtered image to find blobs with a certain hue
-        contours2.findContours(filtered, 50, (w/resize)*(h/resize)/2, 1, false);
+        contours2.findContours(filtered2, 50, (w/resize)*(h/resize)/2, 1, false);
 
 		if (contours2.nBlobs > 0) {
 
@@ -150,19 +164,42 @@ void testApp::update(){
 
 			width = contours2.blobs[0].boundingRect.width / 2;
 			height = contours2.blobs[0].boundingRect.height / 2;
-
-			/*
-			top2 = ofVec3f(kinect2CentroidX, kinect2CentroidY - height / 2);
-			bottom2 = ofVec3f(kinect2CentroidX, kinect2CentroidY +  height / 2 );
-
-			left2 = ofVec3f(kinect2CentroidX + width / 2, kinect2CentroidY);
-			right2 = ofVec3f(kinect2CentroidX - width / 2, kinect2CentroidY);
-			*/
+			
 
 
+
+			topM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY + offset) * (int)(resize) );
+			bottomM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY - offset) * (int)(resize) );
+			leftM = kinect2.getWorldCoordinateAt( (kinect2CentroidX + offset) * (int)(resize) , kinect2CentroidY * (int)(resize) );
+			rightM = kinect2.getWorldCoordinateAt( ( kinect2CentroidX - offset) * (int)(resize), kinect2CentroidY * (int)(resize) );
+			kinect2CentroidZ = kinect2.getDistanceAt( kinect2CentroidX * (int)(resize), kinect2CentroidY * (int)(resize));
+			centroid2M = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), kinect2CentroidY * (int)(resize) );
+
+			//racket1Angle = atan( (PI / 2) / 75 * (bottomM.z - topM.z));
+
+			int off = 25;
+
+			if ( leftM.z - rightM.z > -off && leftM.z - rightM.z < off) {
+				racket2AngleVerti = leftM.z - rightM.z;
+
+			}
+
+			if ( topM.z - bottomM.z > -off && topM.z - bottomM.z < off) {
+				racket2AngleHori = topM.z - bottomM.z;
+			}
+
+			if (centroid2M.z < 400) {
+				centroid2M.z = 400;
+			}
+
+			// modif centre kinect 02
+			centroid2M.y -= 240;
+			if(centroid2M.y==0){ // condition pour no detect
+				centroid2M.y=0;
+			}
+			
 		}
     }
-	
 
 
 	// osc stuff
@@ -189,21 +226,26 @@ void testApp::update(){
 		sender.sendMessage(message);
 	}
 
-	if (kinect2.isConnected()){
+	ofxOscMessage message2;
+
+	if (kinect2.isConnected()) {
 		/*
 		message.setAddress("/kinect2/connected");
 		message.addStringArg("Kinect 2 connected : (Serial) " + kinect2.getSerial() );
 		message.addIntArg(1);
 		*/
-		message.setAddress("/kinect2/position");
-		message.addFloatArg(kinect2CentroidX);
-		message.addFloatArg(kinect2CentroidY);
-		message.addFloatArg(1);
-		sender.sendMessage(message);
+		message2.setAddress("/kinect2/position");
+		message2.addFloatArg(centroid2M.x);
+		message2.addFloatArg(centroid2M.y);
+		message2.addFloatArg(centroid2M.z);
+		message2.addFloatArg(racket2AngleHori);
+		message2.addFloatArg(racket2AngleVerti);
+		
+		sender.sendMessage(message2);
 	} else {
-		message.setAddress("/kinect2/connected");
-		message.addStringArg("Kinect 2 not found " );
-		message.addIntArg(0);
+		message2.setAddress("/kinect2/connected");
+		message2.addStringArg("Kinect 2 not found ");
+		message2.addIntArg(0);
 		sender.sendMessage(message);
 	}
 
@@ -230,22 +272,16 @@ void testApp::draw(){
 	contours2.draw(w, 0);
 
 	
+	/*
 	ofSetColor(255, 0, 255);
 	ofCircle(topM, 2);
 	ofCircle(bottomM, 2);
 	ofCircle(leftM, 2);
 	ofCircle(rightM, 2);
-	
-    
-
-	
- //   //draw red circles for found blobs
- //   for (int i=0; i<contours.nBlobs; i++) {
-	//	ofCircle(contours.blobs[0].centroid.x, contours.blobs[0].centroid.y, 2);
- //   }
+	*/
+   
 
 	////cout << "w/" << resize << ": " << w / resize <<  " " << " h/" << resize << ": " << h / resize << endl;
-	//
 
 	ofSetColor(255, 0, 0);
 	stringstream output;
@@ -255,52 +291,36 @@ void testApp::draw(){
 		output.clear();
 		output << "rectangle violet" << endl;
 		output << "x: " << contours.blobs[0].centroid.x << " y: " << contours.blobs[0].centroid.y << endl;
-		output << kinect1.getWorldCoordinateAt(contours.blobs[0].centroid.x, contours.blobs[0].centroid.y) << endl;
-
+		output << centroidM << endl;
+/*
 		output << "top: " << topM  << " bottom " << bottomM << endl;
 		output << "left: " << leftM << " right " << rightM << endl;
+*/
 		output << "angle hori: " << racket1AngleHori << endl;
 		output << "angle verti: " << racket1AngleVerti << endl;
 	}
-
 	ofDrawBitmapString(output.str(), w+50, 400);
 
-	/*
-	if (contours.nBlobs > 0) {
-		int w = 640;
-		int h = 480;
-		ofMesh mesh;
-		mesh.setMode(OF_PRIMITIVE_POINTS);
-		int step = 2;
-		for(int y = contours.blobs[0].boundingRect.y; y < contours.blobs[0].boundingRect.height * resize; y += step) {
-			for(int x = contours.blobs[0].boundingRect.x; x < contours.blobs[0].boundingRect.width * resize; x += step) {
-				if(kinect1.getDistanceAt(x, y) > 0) {
-					mesh.addColor(kinect1.getColorAt(x,y));
-					mesh.addVertex(kinect1.getWorldCoordinateAt(x, y));
-
-				}
-			}
-		}
-
-		cam.begin();
-			glPointSize(3);
-			ofPushMatrix();
-			// the projected points are 'upside down' and 'backwards' 
-			ofScale(1, -1, -1);
-			ofTranslate(0, 0, -1000); // center the points a bit
-			ofEnableDepthTest();
-			mesh.drawVertices();
-			ofDisableDepthTest();
-			ofPopMatrix();
-		cam.end();
-
+	if (contours2.nBlobs){
+		output.clear();
+		output << "rectangle 2 violet" << endl;
+		output << "x: " << contours2.blobs[0].centroid.x << " y: " << contours2.blobs[0].centroid.y << endl;
+		output << centroid2M << endl;
+/*
+		output << "top: " << topM  << " bottom " << bottomM << endl;
+		output << "left: " << leftM << " right " << rightM << endl;
+*/
+		output << "angle 2 hori: " << racket2AngleHori << endl;
+		output << "angle 2 verti: " << racket2AngleVerti << endl;
 	}
-	
-	*/
+
+	ofDrawBitmapString(output.str(), w+50, 400 + h / 4);
+
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button) {
+	/*
 	if (button == OF_MOUSE_BUTTON_RIGHT){
 		//calculate local mouse x,y in image
 		int mx = x % w / resize;
@@ -311,6 +331,7 @@ void testApp::mousePressed(int x, int y, int button) {
 
 		cout << "hue: " << findHue << endl;
 	}
+	*/
 }
 
 void testApp::keyPressed(int key) {
@@ -351,6 +372,18 @@ void testApp::keyPressed(int key) {
 		tiltAngle1--;
 		if (tiltAngle1 < -30) tiltAngle1 = -30;
 		kinect1.setCameraTiltAngle(tiltAngle1);
+		break;
+
+	case OF_KEY_F11:
+		tiltAngle2++;
+		if (tiltAngle2 > 30) tiltAngle2 = 30;
+		kinect2.setCameraTiltAngle(tiltAngle2);
+		break;
+
+	case OF_KEY_F12:
+		tiltAngle2--;
+		if (tiltAngle1 < -30) tiltAngle2 = 30;
+		kinect2.setCameraTiltAngle(tiltAngle2);
 		break;
 
 	case 'v':

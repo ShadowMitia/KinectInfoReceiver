@@ -78,10 +78,13 @@ public:
 			ofVec3f bottomM;
 			ofVec3f rightM;
 	ofVec3f centroidM;
+	ofVec3f centroid2M;
 
 
 	int tiltAngle1;
 	int tiltAngle2;
+
+	int offset;
 
 };
 
