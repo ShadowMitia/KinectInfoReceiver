@@ -8,7 +8,7 @@ void testApp::setup() {
 	w = kinect1.getWidth();
 	h = kinect1.getHeight();
 
-	resize = 2;
+	resize = 4;
 
     //reserve memory for cv images
 	hsb.allocate(w, h);
@@ -34,6 +34,10 @@ void testApp::setup() {
 	kinect1OldCentroidZ = 0;
 
 	sender.setup(HOST, PORT);
+
+
+
+	tiltAngle1 = 0;
 }
 
 //--------------------------------------------------------------
@@ -73,11 +77,44 @@ void testApp::update(){
 			width = contours.blobs[0].boundingRect.width / 2;
 			height = contours.blobs[0].boundingRect.height / 2;
 
+			/*
 			top = ofVec3f(kinect1CentroidX, kinect1CentroidY - height / 2);
 			bottom = ofVec3f(kinect1CentroidX, kinect1CentroidY +  height / 2 );
 
 			left = ofVec3f(kinect1CentroidX + width / 2, kinect1CentroidY);
 			right = ofVec3f(kinect1CentroidX - width / 2, kinect1CentroidY);
+			*/
+			
+			
+			int offset = 5;
+			/*
+			topM = ofVec3f(kinect1CentroidX , kinect1CentroidY + offset, kinect1.getDistanceAt(kinect1CentroidX * (int)(resize * 3/2), (kinect1CentroidY + offset) * (int)(resize * 3/2) ));
+			bottomM = ofVec3f(kinect1CentroidX, kinect1CentroidY - offset, kinect1.getDistanceAt(kinect1CentroidX * (int)(resize * 3/2), (kinect1CentroidY - offset) * (int)(resize * 3/2)));
+			leftM = ofVec3f(kinect1CentroidX + offset, kinect1CentroidY, kinect1.getDistanceAt((kinect1CentroidX + offset) * (int)(resize * 3/2) , kinect1CentroidY * (int)(resize * 3/2)));
+			rightM = ofVec3f(kinect1CentroidX - offset, kinect1CentroidY, kinect1.getDistanceAt(( kinect1CentroidX - offset) * (int)(resize * 3/2), kinect1CentroidY * (int)(resize * 3/2) ));
+			*/
+
+
+			topM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY + offset) * (int)(resize) );
+			bottomM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY - offset) * (int)(resize) );
+			leftM = kinect1.getWorldCoordinateAt( (kinect1CentroidX + offset) * (int)(resize) , kinect1CentroidY * (int)(resize) );
+			rightM = kinect1.getWorldCoordinateAt( ( kinect1CentroidX - offset) * (int)(resize), kinect1CentroidY * (int)(resize) );
+			kinect1CentroidZ = kinect1.getDistanceAt( kinect1CentroidX * (int)(resize), kinect1CentroidY * (int)(resize));
+			centroidM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), kinect1CentroidY * (int)(resize) );
+
+			//racket1Angle = atan( (PI / 2) / 75 * (bottomM.z - topM.z));
+
+			int off = 25;
+
+			if ( leftM.z - rightM.z > -off && leftM.z - rightM.z < off) {
+				racket1AngleVerti = leftM.z - rightM.z;
+
+			}
+
+			if ( topM.z - bottomM.z > -off && topM.z - bottomM.z < off) {
+				racket1AngleHori = topM.z - bottomM.z;
+			}
+
 		}
     }
 
@@ -114,11 +151,15 @@ void testApp::update(){
 			width = contours2.blobs[0].boundingRect.width / 2;
 			height = contours2.blobs[0].boundingRect.height / 2;
 
+			/*
 			top2 = ofVec3f(kinect2CentroidX, kinect2CentroidY - height / 2);
 			bottom2 = ofVec3f(kinect2CentroidX, kinect2CentroidY +  height / 2 );
 
 			left2 = ofVec3f(kinect2CentroidX + width / 2, kinect2CentroidY);
 			right2 = ofVec3f(kinect2CentroidX - width / 2, kinect2CentroidY);
+			*/
+
+
 		}
     }
 	
@@ -127,22 +168,25 @@ void testApp::update(){
 	// osc stuff
 	ofxOscMessage message;
 
-	if (kinect1.isConnected()){
+	if (kinect1.isConnected()) {
 		/*
 		message.setAddress("/kinect1/connected");
 		message.addStringArg("Kinect 1 connected : (Serial) " + kinect1.getSerial() );
 		message.addIntArg(1);
 		*/
 		message.setAddress("/kinect1/position");
-		message.addFloatArg(kinect1CentroidX);
-		message.addFloatArg(kinect1CentroidY);
-		message.addFloatArg(kinect1.getDistanceAt(kinect1CentroidX, kinect1CentroidY));
+		message.addFloatArg(centroidM.x);
+		message.addFloatArg(centroidM.y);
+		message.addFloatArg(centroidM.z);
+		message.addFloatArg(racket1AngleHori);
+		message.addFloatArg(racket1AngleVerti);
+		
 		sender.sendMessage(message);
 	} else {
 		message.setAddress("/kinect1/connected");
 		message.addStringArg("Kinect 1 not found ");
 		message.addIntArg(0);
-sender.sendMessage(message);
+		sender.sendMessage(message);
 	}
 
 	if (kinect2.isConnected()){
@@ -185,12 +229,13 @@ void testApp::draw(){
     hue2.draw(w, h / resize);
 	contours2.draw(w, 0);
 
-
+	
 	ofSetColor(255, 0, 255);
-	ofCircle(top, 5);
-	ofCircle(bottom, 5);
-	ofCircle(left, 5);
-	ofCircle(right, 5);
+	ofCircle(topM, 2);
+	ofCircle(bottomM, 2);
+	ofCircle(leftM, 2);
+	ofCircle(rightM, 2);
+	
     
 
 	
@@ -205,21 +250,22 @@ void testApp::draw(){
 	ofSetColor(255, 0, 0);
 	stringstream output;
 
+	
 	if (contours.nBlobs){
 		output.clear();
 		output << "rectangle violet" << endl;
 		output << "x: " << contours.blobs[0].centroid.x << " y: " << contours.blobs[0].centroid.y << endl;
 		output << kinect1.getWorldCoordinateAt(contours.blobs[0].centroid.x, contours.blobs[0].centroid.y) << endl;
-				
-		output << "left: " << left << " right: " << right << endl;
-		output <<  kinect1.getWorldCoordinateAt(left.x, left.y) << " =  " << kinect1.getWorldCoordinateAt(right.x, right.y) << endl;
-		ofVec3f tmp = kinect1.getWorldCoordinateAt(right.x, right.y);
-		ofVec3f tmp2 = kinect1.getWorldCoordinateAt(left.x, left.y);
-		output << "delta: " << tmp.z - tmp2.z << endl;
+
+		output << "top: " << topM  << " bottom " << bottomM << endl;
+		output << "left: " << leftM << " right " << rightM << endl;
+		output << "angle hori: " << racket1AngleHori << endl;
+		output << "angle verti: " << racket1AngleVerti << endl;
 	}
 
 	ofDrawBitmapString(output.str(), w+50, 400);
 
+	/*
 	if (contours.nBlobs > 0) {
 		int w = 640;
 		int h = 480;
@@ -250,7 +296,7 @@ void testApp::draw(){
 
 	}
 	
-	
+	*/
 }
 
 //--------------------------------------------------------------
@@ -293,6 +339,18 @@ void testApp::keyPressed(int key) {
 		cout << "Closing Kinect 2" << endl;
 		kinect2.setCameraTiltAngle(0);
 		kinect2.close();
+		break;
+
+	case OF_KEY_F9:
+		tiltAngle1++;
+		if (tiltAngle1 > 30) tiltAngle1 = 30;
+		kinect1.setCameraTiltAngle(tiltAngle1);
+		break;
+
+	case OF_KEY_F10:
+		tiltAngle1--;
+		if (tiltAngle1 < -30) tiltAngle1 = -30;
+		kinect1.setCameraTiltAngle(tiltAngle1);
 		break;
 
 	case 'v':

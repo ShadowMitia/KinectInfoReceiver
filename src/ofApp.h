@@ -53,8 +53,12 @@ public:
 	float kinect2OldCentroidZ;
 
 
-	float racket1Angle;
-	float racket2Angle;
+	float racket1AngleHori;
+	float racket1AngleVerti;
+
+	
+	float racket2AngleHori;
+	float racket2AngleVerti;
 
 
 	ofPoint top, bottom, left, right;
@@ -68,7 +72,16 @@ public:
 	ofxOscSender sender;
 
 	bool showVideoFeed;
-	
+
+		ofVec3f topM;
+			ofVec3f leftM;
+			ofVec3f bottomM;
+			ofVec3f rightM;
+	ofVec3f centroidM;
+
+
+	int tiltAngle1;
+	int tiltAngle2;
 
 };
 
