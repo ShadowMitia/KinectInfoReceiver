@@ -92,14 +92,39 @@ void testApp::update(){
 			height = contours.blobs[0].boundingRect.height / 2;
 			
 			
+			if (kinect1CentroidY - offset < 0) {
+				topM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY) * (int)(resize) );
+			}
+			else{
+				topM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY - offset) * (int)(resize) );
+			}
 
+			if (kinect1CentroidY + offset > h / resize) {
+				bottomM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY) * (int)(resize) );
+			} else {
+				bottomM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY + offset) * (int)(resize) );
+			}
 
+			if (kinect1CentroidX - offset < 0) {
+				leftM = kinect1.getWorldCoordinateAt( (kinect1CentroidX) * (int)(resize) , kinect1CentroidY * (int)(resize) );
+			} else {
+				leftM = kinect1.getWorldCoordinateAt( (kinect1CentroidX - offset) * (int)(resize) , kinect1CentroidY * (int)(resize) );
+			}
 
+			if (kinect1CentroidX + offset > w / 4) {
+				rightM = kinect1.getWorldCoordinateAt( ( kinect1CentroidX) * (int)(resize), kinect1CentroidY * (int)(resize) );
+			} else {
+				rightM = kinect1.getWorldCoordinateAt( ( kinect1CentroidX + offset) * (int)(resize), kinect1CentroidY * (int)(resize) );
+			}
+
+			/*
 			topM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY + offset) * (int)(resize) );
 			bottomM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), (kinect1CentroidY - offset) * (int)(resize) );
 			leftM = kinect1.getWorldCoordinateAt( (kinect1CentroidX + offset) * (int)(resize) , kinect1CentroidY * (int)(resize) );
 			rightM = kinect1.getWorldCoordinateAt( ( kinect1CentroidX - offset) * (int)(resize), kinect1CentroidY * (int)(resize) );
 			kinect1CentroidZ = kinect1.getDistanceAt( kinect1CentroidX * (int)(resize), kinect1CentroidY * (int)(resize));
+
+			*/
 			centroidM = kinect1.getWorldCoordinateAt( kinect1CentroidX * (int)(resize), kinect1CentroidY * (int)(resize) );
 			
 			
@@ -166,14 +191,34 @@ void testApp::update(){
 			height = contours2.blobs[0].boundingRect.height / 2;
 			
 
+			if (kinect2CentroidY - offset < 0) {
+				topM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY) * (int)(resize) );
+			}
+			else{
+				topM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY - offset) * (int)(resize) );
+			}
 
+			if (kinect2CentroidY + offset > h / resize) {
+				bottomM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY) * (int)(resize) );
+			} else {
+				bottomM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY + offset) * (int)(resize) );
+			}
 
-			topM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY + offset) * (int)(resize) );
-			bottomM = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), (kinect2CentroidY - offset) * (int)(resize) );
-			leftM = kinect2.getWorldCoordinateAt( (kinect2CentroidX + offset) * (int)(resize) , kinect2CentroidY * (int)(resize) );
-			rightM = kinect2.getWorldCoordinateAt( ( kinect2CentroidX - offset) * (int)(resize), kinect2CentroidY * (int)(resize) );
-			kinect2CentroidZ = kinect2.getDistanceAt( kinect2CentroidX * (int)(resize), kinect2CentroidY * (int)(resize));
+			if (kinect2CentroidX - offset < 0) {
+				leftM = kinect2.getWorldCoordinateAt( (kinect2CentroidX) * (int)(resize) , kinect2CentroidY * (int)(resize) );
+			} else {
+				leftM = kinect2.getWorldCoordinateAt( (kinect2CentroidX - offset) * (int)(resize) , kinect2CentroidY * (int)(resize) );
+			}
+
+			if (kinect2CentroidX + offset > w / 4) {
+				rightM = kinect2.getWorldCoordinateAt( ( kinect2CentroidX) * (int)(resize), kinect2CentroidY * (int)(resize) );
+			} else {
+				rightM = kinect2.getWorldCoordinateAt( ( kinect2CentroidX + offset) * (int)(resize), kinect2CentroidY * (int)(resize) );
+			}
+
 			centroid2M = kinect2.getWorldCoordinateAt( kinect2CentroidX * (int)(resize), kinect2CentroidY * (int)(resize) );
+
+
 
 			//racket1Angle = atan( (PI / 2) / 75 * (bottomM.z - topM.z));
 
