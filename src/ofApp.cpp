@@ -73,6 +73,9 @@ void testApp::update(){
         
         //store the three channels as grayscale images
         hsb.convertToGrayscalePlanarImage(hue, 0);
+		hue.erode();
+		hue.dilate();
+		
         
         //filter image based on the hue value we're looking for
 		for (int i=0; i<hue.width*hue.height; i++) {
@@ -172,6 +175,9 @@ void testApp::update(){
         
         //store the three channels as grayscale images
         hsb2.convertToGrayscalePlanarImage(hue2, 0);
+		        hsb.convertToGrayscalePlanarImage(hue, 0);
+		hue2.erode();
+		hue2.dilate();
         
         //filter image based on the hue value we're looking for
 		for (int i=0; i<hue2.width*hue2.height; i++) {
