@@ -239,9 +239,6 @@ void testApp::update(){
 
 			// modif centre kinect 02
 			centroid2M.y -= 240;
-			if(centroid2M.y==0){ // condition pour no detect
-				centroid2M.y=0;
-			}
 			
 		}
     }
@@ -256,13 +253,15 @@ void testApp::update(){
 		message.addStringArg("Kinect 1 connected : (Serial) " + kinect1.getSerial() );
 		message.addIntArg(1);
 		*/
+
+		if (!centroidM.x == 0 && !centroidM.y == 0 && !centroidM.z == 0)  {
 		message.setAddress("/kinect1/position");
 		message.addFloatArg(centroidM.x);
 		message.addFloatArg(centroidM.y);
 		message.addFloatArg(centroidM.z);
 		message.addFloatArg(racket1AngleHori);
 		message.addFloatArg(racket1AngleVerti);
-		
+		}
 		sender.sendMessage(message);
 	} else {
 		message.setAddress("/kinect1/connected");
@@ -279,12 +278,14 @@ void testApp::update(){
 		message.addStringArg("Kinect 2 connected : (Serial) " + kinect2.getSerial() );
 		message.addIntArg(1);
 		*/
+		if (!centroid2M.x == 0 && !centroid2M.y == 0 && !centroid2M.z == 0)  {
 		message2.setAddress("/kinect2/position");
 		message2.addFloatArg(centroid2M.x);
 		message2.addFloatArg(centroid2M.y);
 		message2.addFloatArg(centroid2M.z);
 		message2.addFloatArg(racket2AngleHori);
 		message2.addFloatArg(racket2AngleVerti);
+		}
 		
 		sender.sendMessage(message2);
 	} else {
