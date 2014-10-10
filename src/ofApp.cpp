@@ -301,7 +301,7 @@ void testApp::update(){
 		sender.sendMessage(message);
 	}
 
-	
+
 }
 
 //--------------------------------------------------------------
@@ -392,25 +392,23 @@ void testApp::keyPressed(int key) {
 		cout << "Trying to load Kinect 1" << endl;
 		kinect1.setRegistration(true);
 		kinect1.init();
-		kinect1.open(0);
+		kinect1.open(1);
 		break;
 
 	case '2':
 		cout << "Trying to load Kinect 2" << endl;
 		kinect2.setRegistration(true);
 		kinect2.init();
-		kinect2.open(1);
+		kinect2.open(0);
 		break;
 
 	case '4':
 		cout << "Closing Kinect 1" << endl;
-		kinect1.setCameraTiltAngle(0);
 		kinect1.close();
 		break;
 
 	case '5':
 		cout << "Closing Kinect 2" << endl;
-		kinect2.setCameraTiltAngle(0);
 		kinect2.close();
 		break;
 
